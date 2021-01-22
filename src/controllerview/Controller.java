@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
@@ -18,12 +19,10 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     @FXML
-    private Button btn_showColor=new Button();
+    private final Button btn_showColor=new Button();
 
     @FXML
-    private Label l_hexcode = new Label("#000000");
-
-    Model model=new Model();
+    private final Label l_hexcode = new Label("#000000");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -39,10 +38,16 @@ public class Controller implements Initializable {
     }
 
     public void handle_txta_input(KeyEvent event){
-        model.handle_setColor_exact(event, btn_showColor, l_hexcode);
+        TextArea txta=(TextArea)event.getSource();
+        String hexcode = Model.handle_setColor_exact(event.getCode().getCode(), Integer.parseInt(txta.getText()), txta.getId());
+        btn_showColor.setStyle("-fx-background-color: " + hexcode + ";");
+        l_hexcode.setText(hexcode);
     }
 
     public void handle_interval_change(Event event){
-        model.handle_interval_change(event, btn_showColor, l_hexcode);
+        Button btn=(Button)event.getSource();
+        String hexcode=Model.handle_interval_change(btn.getText(), btn.getId());
+        btn_showColor.setStyle("-fx-background-color: " + hexcode + ";");
+        l_hexcode.setText(hexcode);
     }
 }

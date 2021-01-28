@@ -19,10 +19,10 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     @FXML
-    private final Button btn_showColor=new Button();
+    private Button btn_showColor=new Button();
 
     @FXML
-    private final Label l_hexcode = new Label("#000000");
+    private Label l_hexcode = new Label("#000000");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

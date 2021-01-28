@@ -1,154 +1,175 @@
-package Model;
+package model;
 
+import java.lang.Integer;
 import java.util.Scanner;
+import Model.ModularCounter;
+import Model.ColorCode;
 
 public class Model {
-    //Values representing rgb
-    private final static ModularCounter red=new ModularCounter(0, 256);
-    private final static ModularCounter green=new ModularCounter(0,256);
-    private final static ModularCounter blue = new ModularCounter(0,256);
+  private ModularCounter red;
+  private ModularCounter green;
+  private ModularCounter blue;
 
-    /**
-     * Tests the model
-     *
-     */
-    public static void main(String[] args) {
-        //Variables
-        int option;
-        boolean run=true;
-        Scanner sc=new Scanner(System.in);
+  public Model() {
+    this.red = new ModularCounter(0, 256);
+    this.green = new ModularCounter(0, 256);
+    this.blue = new ModularCounter(0, 256);
+  }
 
-        while (run){
-            printMenu();
-            option= sc.nextInt();
-            switch (option){
-                case 1:
-                    System.out.println(getHexcode());
-                break;
-                case 2:
-                    System.out.println("Please enter 3 values (0-255) if a value isn't to be changed, enter a negative number\nRed: ");
-                    int i1=sc.nextInt();
-                    if (i1>=0)
-                        handle_setColor_exact(50, i1, "red");
-                    System.out.println("Green: ");
-                    int i2=sc.nextInt();
-                    if (i2>=0)
-                        handle_setColor_exact(50, i2, "green");
-                    System.out.println("Blue: ");
-                    int i3=sc.nextInt();
-                    if (i3>=0)
-                        handle_setColor_exact(50, i3, "blue");
+  public void changeColorViaAbsoluteValue(ColorCode cc, String value)
+  {
+    try {
+      int i = Integer.parseInt(value);
+      changeColorViaAbsoluteValue(cc, i);
+    }
+    catch (Exception e) {
+      System.out.println("Invalid color Value!");
+    }
+  }
 
-                    System.out.println("New Hexvalue: " + getHexcode());
-                break;
-                case 3:
-                    System.out.println("What value do you want to change (red, green, blue)?: ");
-                    String id= sc.next();
-                    System.out.println("Do you want to increment or decrement the value (+, -): ");
-                    String op=sc.next();
+  //Implement method called by controller (or by main) 
+  public void changeColorViaAbsoluteValue(ColorCode cc, int value)
+  {
+    //Compute the real value for the color
+    //Possible exceptions if: not a number or not in range [0..255] 
+    try {
+	    if (cc == ColorCode.RED)
+	      red = new ModularCounter(value,256);
+	    if  (cc == ColorCode.GREEN)
+	      green = new ModularCounter(value,256);
+	    if  (cc == ColorCode.BLUE)
+	      blue = new ModularCounter(value,256);
+    }
+    catch (Exception e) {
+      System.out.println("Invalid color Value!");
+    }
+    
+    //Always display state in the console and update GUI
+    System.out.println("State: " + this + System.lineSeparator());
+   }
 
-                    handle_interval_change(op, id);
-                    System.out.println("New Hexvalue: " + getHexcode());
-                    break;
-                default:
-                    run=false;
-            }
+  public void changeColorViaRelativeValue(ColorCode cc, String value)
+  {
+    try {
+      int i = Integer.parseInt(value);
+      changeColorViaRelativeValue(cc, i);
+    }
+    catch (Exception e) {
+      System.out.println("Invalid color Value!");
+    }
+  }
+
+  //Implement method called by controller (or by main)
+  public void changeColorViaRelativeValue(ColorCode cc, int value)
+  {
+    //Increment correct color, only if it has a correct value
+    if (cc == ColorCode.RED && red   != null)
+      red.update(value);
+    else if (cc == ColorCode.GREEN && green != null)
+      green.update(value);
+    else if (cc == ColorCode.BLUE && blue  != null)
+      blue.update(value);
+    else
+      return;  //Not a good color!
+
+    //Always display state in the console and update GUI
+    System.out.println("State: " + this +"\n");
+  }
+
+  //The view calls these accessors
+  public int getRed()
+  {return (red == null ? -1 : red.getValue());}
+
+  public int getGreen()
+  {return (green == null ? -1 : green.getValue());}
+
+  public int getBlue()
+  {return (blue == null ? -1 : blue.getValue());}
+
+  public String getHex()
+  {
+    int r = getRed();
+    int g = getGreen();
+    int b = getBlue();
+
+    return gh(r) + gh(g) + gh(b);
+  }
+
+  //Primarily for debugging purposes
+  public String toString()
+  {return "Model[red=" + red + ", green=" + green + ", blue=" + blue +"]";}
+
+  //Helper method
+  private String gh (int i)
+  {
+    String hexDigits = "0123456789ABCDEF";
+    return "" + hexDigits.charAt(i/16) + hexDigits.charAt(i%16);
+  }
+
+  /////////////////////////////////////////////////////////////
+  //
+  //Driver Program
+  //
+  //For testing Model independently from View and Controller
+  //Inside Java Target set the Main Class to colorMachine.Model
+  //
+  /////////////////////////////////////////////////////////////
+  public static void main(String[] args)
+  {
+    //Prompt for construction arguments; get object to test; Don't use constructor directly
+    Model m = new Model();
+    System.out.println("State: "+ m +"\n");
+
+    Scanner sc = new Scanner(System.in);
+
+    for (;;) {
+      try {
+        System.out.println("Menu");
+        System.out.println("  a - changeColorViaAbsoluteValue");
+        System.out.println("  r - changeColorViaRelativeValue");
+        System.out.println("  ? - view all accessors");
+        System.out.println("  q - quit");
+        System.out.println("Enter Command");
+
+        String selection = sc.next();
+
+        if (selection.equals("a") || selection.equals("r")) {
+          System.out.println("  Enter color    ");
+          String colorSelection = sc.next();
+          ColorCode color = ColorCode.RED;
+
+          if (colorSelection.equalsIgnoreCase("red"))
+            color = ColorCode.RED;
+          if (colorSelection.equalsIgnoreCase("green"))
+            color = ColorCode.GREEN;
+          if (colorSelection.equalsIgnoreCase("blue"))
+            color = ColorCode.BLUE;
+
+          System.out.println("  Enter value");
+          String value = sc.next();
+
+          if (selection.equals("a"))
+            m.changeColorViaAbsoluteValue(color, value);
+          else
+            m.changeColorViaRelativeValue(color, value);
         }
-    }
-
-    static void printMenu(){
-        System.out.println("1: Print current color values\n2: Set fixed RGB color\n3: add or subtract the number 10 from any given Color\n4: Quit");
-    }
-
-    /**
-     *
-     * @param keyValue used to check if the key pressed is from 0-9 (in ASCII 48 - 57)
-     * @param value the value the color is to be changed by
-     * @param colorID used to differentiate between the colors
-     * @return the new hexcode to be displayed
-     */
-    public static String handle_setColor_exact(int keyValue, int value, String colorID){
-        if (keyValue>=48 && keyValue<=57) {
-            switch (colorID){
-                case "red":
-                    red.reset();
-                    if (red.getValue()+value <= red.getModulus()) {
-                        red.reset();
-                        red.inc(value);
-                    }
-                break;
-                case "green":
-                    green.reset();
-                    if (green.getValue()+value <= green.getModulus()) {
-                        green.reset();
-                        green.inc(value);
-                    }
-                break;
-                case "blue":
-                    blue.reset();
-                    if (blue.getValue()+value <= blue.getModulus()) {
-                        blue.reset();
-                        blue.inc(value);
-                    }
-                break;
-                default:
-                    System.out.println("Error");
-            }
-
-            return getHexcode();
-        }else{
-            return "ERROR";
+        else if (selection.equals("?")) {
+          System.out.println("  getRed   = " + m.getRed());
+          System.out.println("  getGreen = " + m.getGreen());
+          System.out.println("  getBlue  = " + m.getBlue());
+          if (m.getRed() == -1 || m.getGreen() == -1 || m.getBlue() == -1)
+            System.out.println("  No getHex because some colors missing");
+          else
+            System.out.println("  getHex   = " + m.getHex());
+          System.out.println();
         }
+        else if (selection.equals("q"))
+          break;
+        else
+          System.out.println("\"" + selection + "\" is unknown command");
+      } catch (Exception e) {
+        System.out.println("  Exception Caught/Handled: " + e.getMessage());
+      }
     }
-
-    /**
-     *
-     * @param op from type String, has to have - or + to get the right calculation
-     * @param id used to differentiate between the colors
-     * @return the new hexcode to be displayed
-     */
-    public static String handle_interval_change(String op, String id){
-
-        if (op.contains("-")){
-            if (id.contains("red"))
-                red.dec(10);
-            else if (id.contains("green"))
-                green.dec(10);
-            else
-                blue.dec(10);
-        }else{
-            if (id.contains("red"))
-                red.inc(10);
-            else if (id.contains("green"))
-                green.inc(10);
-            else
-                blue.inc(10);
-        }
-
-        return getHexcode();
-    }
-
-    /**
-     *
-     * @return the calculated hexcode
-     */
-    static String getHexcode(){
-        String hex = "#";
-
-        String redV=Integer.toHexString(red.getValue());
-        String greenV=Integer.toHexString(green.getValue());
-        String blueV=Integer.toHexString(blue.getValue());
-
-        if (redV.length()==1)
-            redV="0"+redV;
-        if (greenV.length()==1)
-            greenV="0"+greenV;
-        if (blueV.length()==1)
-            blueV="0"+blueV;
-        hex+=redV;
-        hex+=greenV;
-        hex+=blueV;
-
-        return hex;
-    }
+  }
 }

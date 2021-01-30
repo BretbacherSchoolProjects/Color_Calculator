@@ -1,5 +1,6 @@
-package model;
+package Model;
 
+import java.io.*;
 import java.lang.Integer;
 import java.util.Scanner;
 import Model.ModularCounter;
@@ -24,6 +25,40 @@ public class Model {
     }
     catch (Exception e) {
       System.out.println("Invalid color Value!");
+    }
+  }
+
+  public void save(){
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter("state.dat"))) {
+
+      bw.flush();
+      bw.write("Color File Format 1.0");
+      bw.newLine();
+      bw.write("" + getRed());
+      bw.newLine();
+      bw.write("" + getGreen());
+      bw.newLine();
+      bw.write("" + getBlue());
+      bw.close();
+      System.out.println("Saved: " + getRed() + ", " + getGreen() + ", " + getBlue());
+    }catch (IOException ioe){
+      System.out.println("Error");
+    }
+  }
+
+  public void load(){
+    try (BufferedReader br=new BufferedReader(new FileReader("state.dat"))){
+      System.out.println(br.readLine());
+      int rV=Integer.parseInt(br.readLine());
+      int gV=Integer.parseInt(br.readLine());
+      int bV=Integer.parseInt(br.readLine());
+
+      red=new ModularCounter(rV,256);
+      green=new ModularCounter(gV, 256);
+      blue=new ModularCounter(bV, 256);
+
+    }catch (IOException ioe){
+      System.out.println("Error");
     }
   }
 

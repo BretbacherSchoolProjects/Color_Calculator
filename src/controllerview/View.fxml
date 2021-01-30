@@ -5,6 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllerview.Controller">
@@ -36,5 +37,11 @@
       <TextField fx:id="txtRed" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyTyped="#txt_RedChanged" text="0" GridPane.rowIndex="1" />
       <TextField fx:id="txtBlue" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyTyped="#txt_BlueChanged" text="0" GridPane.rowIndex="5" />
       <Button fx:id="btnColor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowSpan="3" />
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+         <children>
+            <Button mnemonicParsing="false" onMouseClicked="#handleSave" prefHeight="119.0" prefWidth="126.0" text="Save" />
+            <Button mnemonicParsing="false" onMouseClicked="#handleLoad" prefHeight="110.0" prefWidth="130.0" text="Load" />
+         </children>
+      </HBox>
    </children>
 </GridPane>

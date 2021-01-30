@@ -1,5 +1,6 @@
 package controllerview;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,7 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import Model.ColorCode;
 import javafx.stage.Stage;
-import model.Model;
+import Model.Model;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -50,6 +51,15 @@ public class Controller implements Initializable {
 		}catch(Exception ignored){
 			System.out.println("Error");
 		}
+	}
+
+	public void handleSave(Event event){
+		model.save();
+	}
+
+	public void handleLoad(Event event){
+		model.load();
+		update(true);
 	}
 
 	@FXML
